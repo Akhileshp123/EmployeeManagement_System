@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Employee Management</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header>
+      <div>
+        <h1>Employee Management</h1>
+        <p>Interactive UI for departments and employees.</p>
+      </div>
+      <div class="status" id="status">Loading...</div>
+    </header>
+
+    <section class="widget-grid">
+      <div class="widget-card">
+        <h3>Departments</h3>
+        <p class="widget-value" id="departmentCount">0</p>
+        <p class="widget-label">Total departments loaded</p>
+      </div>
+      <div class="widget-card">
+        <h3>Employees</h3>
+        <p class="widget-value" id="employeeCount">0</p>
+        <p class="widget-label">Total employees loaded</p>
+      </div>
+      <div class="widget-card widget-accent">
+        <h3>Organization</h3>
+        <p class="widget-value">Scroll through records</p>
+        <p class="widget-label">Use the list widgets below</p>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Departments</h2>
+        <button id="refreshDepartments">Refresh</button>
+      </div>
+      <div class="scroll-panel">
+        <div class="grid" id="departmentGrid"></div>
+      </div>
+      <form id="departmentForm" class="form-card">
+        <h3>Create Department</h3>
+        <input type="text" id="deptName" placeholder="Name" required />
+        <textarea id="deptDesc" placeholder="Description"></textarea>
+        <button type="submit">Create Department</button>
+      </form>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>Employees</h2>
+          <p class="panel-small">Grouped by department and editable inline.</p>
+        </div>
+        <div class="filter-group">
+          <label for="departmentFilter">Filter by department</label>
+          <select id="departmentFilter">
+            <option value="">All departments</option>
+          </select>
+          <button id="refreshEmployees">Refresh</button>
+        </div>
+      </div>
+      <div class="scroll-panel">
+        <div class="grid" id="employeeGrid"></div>
+      </div>
+      <form id="employeeForm" class="form-card">
+        <h3>Create Employee</h3>
+        <input type="text" id="empName" placeholder="Full name" required />
+        <input type="text" id="empEmail" placeholder="Email" required />
+        <input type="text" id="empPhone" placeholder="Phone" />
+        <input type="number" id="empSalary" placeholder="Salary" min="0" required />
+        <select id="empDepartmentId" required>
+          <option value="">Select department</option>
+        </select>
+        <button type="submit">Create Employee</button>
+      </form>
+    </section>
+  </div>
+
+  <template id="cardTemplate">
+    <div class="card">
+      <div class="card-body"></div>
+      <div class="card-footer"></div>
+    </div>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
