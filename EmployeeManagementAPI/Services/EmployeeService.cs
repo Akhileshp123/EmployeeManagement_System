@@ -83,12 +83,43 @@ public class EmployeeService : IEmployeeService
     }
 
     public async Task<IEnumerable<EmployeeResponseDto>> SearchEmployeesAsync(
-        string? search, int? departmentId, string? sortBy, bool ascending, int page, int pageSize)
+        string? name,
+        string? email,
+        int? departmentId,
+        decimal? minSalary,
+        decimal? maxSalary,
+        string? sortBy,
+        bool ascending,
+        int page,
+        int pageSize)
     {
         if (page < 1) page = 1;
         if (pageSize < 1 || pageSize > 100) pageSize = 10;
 
-        var employees = await _employeeRepository.SearchEmployeesAsync(search, departmentId, sortBy, ascending, page, pageSize);
+        if (minSalary.HasValue && minSalary.Value < 0)
+            throw new ArgumentException("Minimum salary cannot be negative.");
+
+        if (maxSalary.HasValue && maxSalary.Value < 0)
+            throw new ArgumentException("Maximum salary cannot be negative.");
+
+        if (minSalary.HasValue && maxSalary.HasValue && minSalary.Value > maxSalary.Value)
+            throw new ArgumentException("Minimum salary cannot be greater than maximum salary.");
+
+        if (departmentId.HasValue && !await _departmentRepository.ExistsByIdAsync(departmentId.Value))
+            throw new ArgumentException("Department does not exist.");
+
+        var normalizedSort = NormalizeSortColumn(sortBy);
+        var employees = await _employeeRepository.SearchEmployeesAsync(
+            name,
+            email,
+            departmentId,
+            minSalary,
+            maxSalary,
+            normalizedSort,
+            ascending,
+            page,
+            pageSize);
+
         return employees.Select(MapToDto);
     }
 
@@ -120,4 +151,19 @@ public class EmployeeService : IEmployeeService
         if (salary <= 0)
             throw new ArgumentException("Salary must be greater than zero.");
     }
+
+    private static string? NormalizeSortColumn(string? sortBy) => sortBy?.Trim().ToLowerInvariant() switch
+    {
+        "name" => "FirstName",
+        "firstname" => "FirstName",
+        "lastname" => "LastName",
+        "last_name" => "LastName",
+        "email" => "Email",
+        "salary" => "Salary",
+        "hiredate" => "HireDate",
+        "hire_date" => "HireDate",
+        "department" => "DepartmentName",
+        "departmentname" => "DepartmentName",
+        _ => sortBy
+    };
 }

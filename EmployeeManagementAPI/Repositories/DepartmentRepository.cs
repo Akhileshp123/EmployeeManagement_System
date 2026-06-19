@@ -38,6 +38,34 @@ public class DepartmentRepository : IDepartmentRepository
         return departments;
     }
 
+    public async Task<IEnumerable<Department>> SearchDepartmentsAsync(string name)
+    {
+        const string sql = @"SELECT DepartmentId, DepartmentName, Description
+                             FROM Department
+                             WHERE DepartmentName LIKE @Name
+                             ORDER BY DepartmentName";
+        var departments = new List<Department>();
+
+        await using var connection = _connectionFactory.CreateConnection();
+        await connection.OpenAsync();
+
+        await using var command = new MySqlCommand(sql, connection);
+        command.Parameters.AddWithValue("@Name", $"%{name}%");
+
+        await using var reader = await command.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            departments.Add(new Department
+            {
+                DepartmentId = reader.GetInt32(reader.GetOrdinal("DepartmentId")),
+                DepartmentName = reader.GetString(reader.GetOrdinal("DepartmentName")),
+                Description = reader.IsDBNull(reader.GetOrdinal("Description")) ? null : reader.GetString(reader.GetOrdinal("Description"))
+            });
+        }
+
+        return departments;
+    }
+
     public async Task<Department?> GetDepartmentByIdAsync(int departmentId)
     {
         const string sql = "SELECT DepartmentId, DepartmentName, Description FROM Department WHERE DepartmentId = @DepartmentId";

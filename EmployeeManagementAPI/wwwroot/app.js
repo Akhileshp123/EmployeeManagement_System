@@ -1,6 +1,6 @@
 const apiBase = (window.location.protocol === 'http:' || window.location.protocol === 'https:')
   ? window.location.origin
-  : 'http://127.0.0.1:5012';
+  : 'http://127.0.0.1:5011';
 const statusEl = document.getElementById('status');
 const deptGrid = document.getElementById('departmentGrid');
 const empGrid = document.getElementById('employeeGrid');
@@ -65,19 +65,19 @@ async function loadDepartments() {
     deptSelect.innerHTML = '<option value="">Select department</option>';
     departmentFilter.innerHTML = '<option value="">All departments</option>';
 
-    departments.forEach((dept, index) => {
+    const sortedDepartments = [...departments].sort((a, b) => a.departmentName.localeCompare(b.departmentName));
+    sortedDepartments.forEach((dept, index) => {
       const footer = document.createElement('div');
       footer.append(createButton('Edit', () => editDepartment(dept)), createButton('Delete', () => deleteDepartment(dept.departmentId)));
       const content = `
         <strong>No.:</strong> ${index + 1}<br />
-        <strong>ID:</strong> ${dept.departmentId}<br />
         <strong>Name:</strong> ${dept.departmentName}<br />
         <strong>Description:</strong> ${dept.description || '<em>none</em>'}`;
       deptGrid.appendChild(renderCard(`${index + 1}. ${dept.departmentName}`, content, footer));
 
       const option = document.createElement('option');
       option.value = dept.departmentId;
-      option.textContent = `${dept.departmentName} (ID ${dept.departmentId})`;
+      option.textContent = dept.departmentName;
       deptSelect.appendChild(option);
 
       const filterOption = document.createElement('option');
@@ -106,32 +106,39 @@ function renderEmployees() {
   const filtered = selectedDepartmentId
     ? employees.filter((employee) => employee.departmentId === selectedDepartmentId)
     : employees;
+  const sortedEmployees = [...filtered].sort((a, b) =>
+    a.departmentName.localeCompare(b.departmentName)
+    || a.firstName.localeCompare(b.firstName)
+    || a.lastName.localeCompare(b.lastName)
+  );
 
-  empGrid.innerHTML = filtered.length ? '' : '<p>No employees found for this filter.</p>';
+  empGrid.innerHTML = sortedEmployees.length ? '' : '<p>No employees found for this filter.</p>';
 
-  const grouped = groupEmployeesByDepartment(filtered);
+  let serialNumber = 1;
+  const grouped = groupEmployeesByDepartment(sortedEmployees);
   Object.keys(grouped).forEach((departmentName) => {
     const header = document.createElement('h3');
     header.textContent = departmentName;
     header.className = 'group-heading';
     empGrid.appendChild(header);
 
-    grouped[departmentName].forEach((emp, index) => {
+    grouped[departmentName].forEach((emp) => {
+      const displayNumber = serialNumber;
+      serialNumber += 1;
       const footer = document.createElement('div');
       footer.append(createButton('Edit', () => editEmployee(emp)), createButton('Delete', () => deleteEmployee(emp.employeeId)));
       const content = `
-        <strong>No.:</strong> ${index + 1}<br />
-        <strong>ID:</strong> ${emp.employeeId}<br />
+        <strong>No.:</strong> ${displayNumber}<br />
         <strong>Name:</strong> ${emp.fullName}<br />
         <strong>Email:</strong> ${emp.email}<br />
         <strong>Phone:</strong> ${emp.phone || '<em>none</em>'}<br />
         <strong>Salary:</strong> ${emp.salary.toFixed(2)}<br />
         <strong>Department:</strong> ${emp.departmentName}`;
-      empGrid.appendChild(renderCard(`${index + 1}. ${emp.fullName}`, content, footer));
+      empGrid.appendChild(renderCard(`${displayNumber}. ${emp.fullName}`, content, footer));
     });
   });
 
-  employeeCountEl.textContent = employees.length;
+  employeeCountEl.textContent = sortedEmployees.length;
   updateStatus('Employees loaded.');
 }
 
@@ -152,7 +159,8 @@ function editDepartment(dept) {
 }
 
 function editEmployee(emp) {
-  document.getElementById('empName').value = emp.fullName || `${emp.firstName} ${emp.lastName}`.trim();
+  document.getElementById('empFirstName').value = emp.firstName || '';
+  document.getElementById('empLastName').value = emp.lastName || '';
   document.getElementById('empEmail').value = emp.email;
   document.getElementById('empSalary').value = emp.salary;
   document.getElementById('empDepartmentId').value = emp.departmentId;
@@ -206,10 +214,9 @@ deptForm.addEventListener('submit', async (event) => {
 employeeForm.addEventListener('submit', async (event) => {
   event.preventDefault();
   const id = employeeForm.dataset.editId;
-  const nameParts = document.getElementById('empName').value.trim().split(' ');
   const payload = {
-    firstName: nameParts[0] || '',
-    lastName: nameParts.slice(1).join(' ') || '',
+    firstName: document.getElementById('empFirstName').value.trim(),
+    lastName: document.getElementById('empLastName').value.trim(),
     email: document.getElementById('empEmail').value.trim(),
     phone: document.getElementById('empPhone').value.trim() || null,
     salary: Number(document.getElementById('empSalary').value),

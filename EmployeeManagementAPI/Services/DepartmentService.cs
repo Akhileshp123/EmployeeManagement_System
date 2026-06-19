@@ -16,21 +16,16 @@ public class DepartmentService : IDepartmentService
     public async Task<IEnumerable<DepartmentResponseDto>> GetAllDepartmentsAsync()
     {
         var departments = await _departmentRepository.GetDepartmentsAsync();
-        var result = new List<DepartmentResponseDto>();
+        return await MapDepartmentsAsync(departments);
+    }
 
-        foreach (var dept in departments)
-        {
-            var count = await _departmentRepository.GetEmployeeCountAsync(dept.DepartmentId);
-            result.Add(new DepartmentResponseDto
-            {
-                DepartmentId = dept.DepartmentId,
-                DepartmentName = dept.DepartmentName,
-                Description = dept.Description,
-                EmployeeCount = count
-            });
-        }
+    public async Task<IEnumerable<DepartmentResponseDto>> SearchDepartmentsAsync(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return await GetAllDepartmentsAsync();
 
-        return result;
+        var departments = await _departmentRepository.SearchDepartmentsAsync(name.Trim());
+        return await MapDepartmentsAsync(departments);
     }
 
     public async Task<DepartmentResponseDto?> GetDepartmentByIdAsync(int departmentId)
@@ -92,5 +87,24 @@ public class DepartmentService : IDepartmentService
             throw new InvalidOperationException($"Cannot delete department. It has {employeeCount} employee(s) assigned.");
 
         return await _departmentRepository.DeleteDepartmentAsync(departmentId);
+    }
+
+    private async Task<IEnumerable<DepartmentResponseDto>> MapDepartmentsAsync(IEnumerable<Department> departments)
+    {
+        var result = new List<DepartmentResponseDto>();
+
+        foreach (var dept in departments)
+        {
+            var count = await _departmentRepository.GetEmployeeCountAsync(dept.DepartmentId);
+            result.Add(new DepartmentResponseDto
+            {
+                DepartmentId = dept.DepartmentId,
+                DepartmentName = dept.DepartmentName,
+                Description = dept.Description,
+                EmployeeCount = count
+            });
+        }
+
+        return result;
     }
 }

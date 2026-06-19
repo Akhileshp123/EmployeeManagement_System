@@ -5,6 +5,7 @@ namespace EmployeeManagementAPI.Interfaces;
 public interface IDepartmentRepository
 {
     Task<IEnumerable<Department>> GetDepartmentsAsync();
+    Task<IEnumerable<Department>> SearchDepartmentsAsync(string name);
     Task<Department?> GetDepartmentByIdAsync(int departmentId);
     Task<int> CreateDepartmentAsync(Department department);
     Task<bool> UpdateDepartmentAsync(Department department);

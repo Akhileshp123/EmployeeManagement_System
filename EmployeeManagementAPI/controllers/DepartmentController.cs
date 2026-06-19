@@ -1,11 +1,12 @@
+using EmployeeManagementAPI.DTOs;
 using EmployeeManagementAPI.Interfaces;
-using EmployeeManagementAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EmployeeManagementAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Route("api/departments")]
 public class DepartmentController : ControllerBase
 {
     private readonly IDepartmentService _departmentService;
@@ -16,9 +17,19 @@ public class DepartmentController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetDepartments()
+    public async Task<IActionResult> GetDepartments([FromQuery] string? name)
     {
-        var departments = await _departmentService.GetAllDepartmentsAsync();
+        var departments = string.IsNullOrWhiteSpace(name)
+            ? await _departmentService.GetAllDepartmentsAsync()
+            : await _departmentService.SearchDepartmentsAsync(name);
+
+        return Ok(departments);
+    }
+
+    [HttpGet("search")]
+    public async Task<IActionResult> SearchDepartments([FromQuery] string name)
+    {
+        var departments = await _departmentService.SearchDepartmentsAsync(name);
         return Ok(departments);
     }
 
@@ -30,12 +41,13 @@ public class DepartmentController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateDepartment([FromBody] Department department)
+    public async Task<IActionResult> CreateDepartment([FromBody] CreateDepartmentDto department)
     {
         try
         {
             var id = await _departmentService.CreateDepartmentAsync(department);
-            return CreatedAtAction(nameof(GetDepartmentById), new { id }, department);
+            var created = await _departmentService.GetDepartmentByIdAsync(id);
+            return CreatedAtAction(nameof(GetDepartmentById), new { id }, created);
         }
         catch (ArgumentException ex)
         {
@@ -44,7 +56,7 @@ public class DepartmentController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> UpdateDepartment(int id, [FromBody] Department department)
+    public async Task<IActionResult> UpdateDepartment(int id, [FromBody] UpdateDepartmentDto department)
     {
         try
         {
@@ -60,7 +72,14 @@ public class DepartmentController : ControllerBase
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteDepartment(int id)
     {
-        var deleted = await _departmentService.DeleteDepartmentAsync(id);
-        return deleted ? NoContent() : NotFound();
+        try
+        {
+            var deleted = await _departmentService.DeleteDepartmentAsync(id);
+            return deleted ? NoContent() : NotFound();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { ex.Message });
+        }
     }
 }

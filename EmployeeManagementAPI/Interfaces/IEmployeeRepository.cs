@@ -10,5 +10,14 @@ public interface IEmployeeRepository
     Task<bool> UpdateEmployeeAsync(Employee employee);
     Task<bool> DeleteEmployeeAsync(int employeeId);
     Task<bool> ExistsByEmailAsync(string email, int? excludeEmployeeId = null);
-    Task<IEnumerable<Employee>> SearchEmployeesAsync(string? search, int? departmentId, string? sortBy, bool ascending, int page, int pageSize);
+    Task<IEnumerable<Employee>> SearchEmployeesAsync(
+        string? search,
+        string? email,
+        int? departmentId,
+        decimal? minSalary,
+        decimal? maxSalary,
+        string? sortBy,
+        bool ascending,
+        int page,
+        int pageSize);
 }

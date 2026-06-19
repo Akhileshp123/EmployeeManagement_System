@@ -157,7 +157,15 @@ public class EmployeeRepository : IEmployeeRepository
     }
 
     public async Task<IEnumerable<Employee>> SearchEmployeesAsync(
-        string? search, int? departmentId, string? sortBy, bool ascending, int page, int pageSize)
+        string? search,
+        string? email,
+        int? departmentId,
+        decimal? minSalary,
+        decimal? maxSalary,
+        string? sortBy,
+        bool ascending,
+        int page,
+        int pageSize)
     {
         var sqlBuilder = new StringBuilder(@"
             SELECT e.EmployeeId, e.FirstName, e.LastName, e.Email, e.Phone,
@@ -168,12 +176,27 @@ public class EmployeeRepository : IEmployeeRepository
 
         if (!string.IsNullOrWhiteSpace(search))
         {
-            sqlBuilder.Append(" AND (e.FirstName LIKE @Search OR e.LastName LIKE @Search OR e.Email LIKE @Search)");
+            sqlBuilder.Append(" AND (e.FirstName LIKE @Search OR e.LastName LIKE @Search OR CONCAT(e.FirstName, ' ', e.LastName) LIKE @Search)");
+        }
+
+        if (!string.IsNullOrWhiteSpace(email))
+        {
+            sqlBuilder.Append(" AND e.Email LIKE @Email");
         }
 
         if (departmentId.HasValue)
         {
             sqlBuilder.Append(" AND e.DepartmentId = @DepartmentId");
+        }
+
+        if (minSalary.HasValue)
+        {
+            sqlBuilder.Append(" AND e.Salary >= @MinSalary");
+        }
+
+        if (maxSalary.HasValue)
+        {
+            sqlBuilder.Append(" AND e.Salary <= @MaxSalary");
         }
 
         // Safe whitelist for sort columns
@@ -201,8 +224,17 @@ public class EmployeeRepository : IEmployeeRepository
         if (!string.IsNullOrWhiteSpace(search))
             command.Parameters.AddWithValue("@Search", $"%{search}%");
 
+        if (!string.IsNullOrWhiteSpace(email))
+            command.Parameters.AddWithValue("@Email", $"%{email}%");
+
         if (departmentId.HasValue)
             command.Parameters.AddWithValue("@DepartmentId", departmentId.Value);
+
+        if (minSalary.HasValue)
+            command.Parameters.AddWithValue("@MinSalary", minSalary.Value);
+
+        if (maxSalary.HasValue)
+            command.Parameters.AddWithValue("@MaxSalary", maxSalary.Value);
 
         command.Parameters.AddWithValue("@PageSize", pageSize);
         command.Parameters.AddWithValue("@Offset", (page - 1) * pageSize);
