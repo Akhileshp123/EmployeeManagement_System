@@ -1288,11 +1288,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\Users\\P.Akhilesh\\OneDrive\\Desktop\\E_M_P\\EmployeeManagementAPI\\EmployeeManagementAPI.csproj",
+      "projectUniqueName": "C:\\Users\\P.Akhilesh\\OneDrive\\Desktop\\E_M_P\\EmployeeManagementAPI\\EmployeeManagementAPI.csproj",
       "projectName": "EmployeeManagementAPI",
-      "projectPath": "c:\\Users\\P.Akhilesh\\OneDrive\\Desktop\\E_M_P\\EmployeeManagementAPI\\EmployeeManagementAPI.csproj",
+      "projectPath": "C:\\Users\\P.Akhilesh\\OneDrive\\Desktop\\E_M_P\\EmployeeManagementAPI\\EmployeeManagementAPI.csproj",
       "packagesPath": "C:\\Users\\P.Akhilesh\\.nuget\\packages\\",
-      "outputPath": "c:\\Users\\P.Akhilesh\\OneDrive\\Desktop\\E_M_P\\EmployeeManagementAPI\\obj\\",
+      "outputPath": "C:\\Users\\P.Akhilesh\\OneDrive\\Desktop\\E_M_P\\EmployeeManagementAPI\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\P.Akhilesh\\AppData\\Roaming\\NuGet\\NuGet.Config"
