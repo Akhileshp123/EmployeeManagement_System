@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\P.Akhilesh\\OneDrive\\Desktop\\E_M_P\\EmployeeManagementAPI\\EmployeeManagementAPI.csproj": {}
+    "C:\\Users\\P.Akhilesh\\OneDrive\\Desktop\\E_M_P\\employeemanagementAPI\\EmployeeManagementAPI.csproj": {}
   },
   "projects": {
-    "C:\\Users\\P.Akhilesh\\OneDrive\\Desktop\\E_M_P\\EmployeeManagementAPI\\EmployeeManagementAPI.csproj": {
+    "C:\\Users\\P.Akhilesh\\OneDrive\\Desktop\\E_M_P\\employeemanagementAPI\\EmployeeManagementAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\P.Akhilesh\\OneDrive\\Desktop\\E_M_P\\EmployeeManagementAPI\\EmployeeManagementAPI.csproj",
+        "projectUniqueName": "C:\\Users\\P.Akhilesh\\OneDrive\\Desktop\\E_M_P\\employeemanagementAPI\\EmployeeManagementAPI.csproj",
         "projectName": "EmployeeManagementAPI",
-        "projectPath": "C:\\Users\\P.Akhilesh\\OneDrive\\Desktop\\E_M_P\\EmployeeManagementAPI\\EmployeeManagementAPI.csproj",
+        "projectPath": "C:\\Users\\P.Akhilesh\\OneDrive\\Desktop\\E_M_P\\employeemanagementAPI\\EmployeeManagementAPI.csproj",
         "packagesPath": "C:\\Users\\P.Akhilesh\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\P.Akhilesh\\OneDrive\\Desktop\\E_M_P\\EmployeeManagementAPI\\obj\\",
+        "outputPath": "C:\\Users\\P.Akhilesh\\OneDrive\\Desktop\\E_M_P\\employeemanagementAPI\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\P.Akhilesh\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -48,7 +48,7 @@
           "dependencies": {
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
-              "version": "[10.0.0, )"
+              "version": "[10.0.9, )"
             },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
@@ -60,7 +60,7 @@
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
-              "version": "[10.2.1, )"
+              "version": "[10.2.2, )"
             }
           },
           "imports": [

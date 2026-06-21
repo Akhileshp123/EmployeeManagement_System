@@ -1,12 +1,16 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using EmployeeManagementAPI.DTOs;
 using EmployeeManagementAPI.Interfaces;
-using Microsoft.AspNetCore.Mvc;
+
 
 namespace EmployeeManagementAPI.Controllers;
 
+
+
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
-[Route("api/employees")]
 public class EmployeeController : ControllerBase
 {
     private readonly IEmployeeService _employeeService;
@@ -15,6 +19,7 @@ public class EmployeeController : ControllerBase
     {
         _employeeService = employeeService;
     }
+    
 
     [HttpGet]
     public async Task<IActionResult> GetEmployees(
@@ -97,6 +102,7 @@ public class EmployeeController : ControllerBase
         return employee is null ? NotFound() : Ok(employee);
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> CreateEmployee([FromBody] CreateEmployeeDto employee)
     {
@@ -112,6 +118,7 @@ public class EmployeeController : ControllerBase
         }
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPut("{id:int}")]
     public async Task<IActionResult> UpdateEmployee(int id, [FromBody] UpdateEmployeeDto employee)
     {
@@ -126,6 +133,7 @@ public class EmployeeController : ControllerBase
         }
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteEmployee(int id)
     {
