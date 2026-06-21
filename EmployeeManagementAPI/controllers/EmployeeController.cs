@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using EmployeeManagementAPI.DTOs;
 using EmployeeManagementAPI.Interfaces;
+using EmployeeManagementAPI.Helpers;
 
 
 namespace EmployeeManagementAPI.Controllers;
@@ -19,7 +20,7 @@ public class EmployeeController : ControllerBase
     {
         _employeeService = employeeService;
     }
-    
+
 
     [HttpGet]
     public async Task<IActionResult> GetEmployees(
@@ -32,7 +33,12 @@ public class EmployeeController : ControllerBase
             ? await _employeeService.GetAllEmployeesAsync()
             : await _employeeService.SearchEmployeesAsync(null, null, null, null, null, sort, ascending, page, pageSize);
 
-        return Ok(employees);
+        return Ok(new ApiResponse<object>
+        {
+            Success = true,
+            Message = "Employees retrieved successfully",
+            Data = employees
+        });
     }
 
     [HttpGet("search")]
@@ -99,7 +105,21 @@ public class EmployeeController : ControllerBase
     public async Task<IActionResult> GetEmployeeById(int id)
     {
         var employee = await _employeeService.GetEmployeeByIdAsync(id);
-        return employee is null ? NotFound() : Ok(employee);
+        if (employee is null)
+{
+    return NotFound(new ApiResponse<object>
+    {
+        Success = false,
+        Message = "Employee not found"
+    });
+}
+
+return Ok(new ApiResponse<object>
+{
+    Success = true,
+    Message = "Employee retrieved successfully",
+    Data = employee
+});
     }
 
     [Authorize(Roles = "Admin")]
